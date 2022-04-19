@@ -4,8 +4,6 @@
 use std::fs::File;
 use std::io::{Read, Write};
 
-use serde_derive::{Deserialize, Serialize};
-
 const PATH: &str = "./config.toml";
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

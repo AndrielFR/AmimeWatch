@@ -12,6 +12,9 @@ pub use config::Config;
 #[macro_use]
 extern crate macro_rules_attribute;
 
+#[macro_use]
+extern crate serde_derive;
+
 #[macro_export]
 macro_rules! dyn_async {(
     $( #[$attr:meta] )*
