@@ -9,6 +9,9 @@ const SESSION_FILE: &str = "amime.session";
 type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
 async fn async_main() -> Result {
+    // Initialize the logger
+    env_logger::init();
+
     // Load the configuration
     let config = amime_watch::Config::load()?;
 
