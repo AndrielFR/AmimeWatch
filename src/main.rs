@@ -16,6 +16,7 @@ async fn async_main() -> Result {
     let config = amime_watch::Config::load()?;
 
     // Connect the client
+    log::info!("connecting bot...");
     let mut client = Client::connect(Config {
         session: Session::load_file_or_create(SESSION_FILE)?,
         api_id: config.telegram.api_id,
@@ -26,6 +27,7 @@ async fn async_main() -> Result {
         },
     })
     .await?;
+    log::info!("bot connected");
 
     if !client.is_authorized().await? {
         client
@@ -36,6 +38,7 @@ async fn async_main() -> Result {
             )
             .await?;
         client.session().save_to_file(SESSION_FILE)?;
+        log::info!("bot authorized");
     }
 
     // Load and run the plugins
@@ -46,6 +49,7 @@ async fn async_main() -> Result {
 
     // Save the session
     client.session().save_to_file(SESSION_FILE)?;
+    log::info!("session saved");
 
     Ok(())
 }

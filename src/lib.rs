@@ -5,15 +5,19 @@
 #![allow(unused_macros)]
 
 mod config;
+pub mod locales;
 pub mod plugins;
 
 pub use config::Config;
 
 #[macro_use]
-extern crate macro_rules_attribute;
+extern crate serde_derive;
 
 #[macro_use]
-extern crate serde_derive;
+extern crate macro_rules_attribute;
+
+// Load the languages
+rust_i18n::i18n!("./src/locales/files/");
 
 #[macro_export]
 macro_rules! dyn_async {(
