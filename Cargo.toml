@@ -1,0 +1,24 @@
+[package]
+name = "amime-watch"
+version = "0.1.0"
+authors = ["AndrielFR <andrielkogama2@gmail.com>"]
+license = "MIT"
+description = """
+A Telegram bot to watch animes.
+"""
+homepage = "https://github.com/AndrielFR/AmimeWatch"
+repository = "https://github.com/AndrielFR/AmimeWatch"
+keywords = ["telegram", "anime", "movies", "watch"]
+categories = []
+edition = "2021"
+
+[dependencies]
+grammers-client = { git = "https://github.com/Lonami/grammers", features = ["html"] }
+grammers-session = { git = "https://github.com/Lonami/grammers" }
+tokio = { version = "^1.17", features = ["macros", "rt", "rt-multi-thread", "sync"] }
+log = { version = "^0.4", features = ["std"] }
+toml = "^0.5"
+serde_derive = "^1.0"
+serde = { version = "^1.0", features = ["derive"] }
+regex = "^1.5"
+macro_rules_attribute = "*"
