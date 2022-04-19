@@ -92,7 +92,7 @@ impl Handler {
         self.function
     }
 
-    fn r#type(&self) -> &Type {
+    pub fn r#type(&self) -> &Type {
         &self.r#type
     }
 
@@ -147,6 +147,7 @@ impl Handler {
     }
 }
 
+#[derive(PartialEq)]
 pub enum Type {
     CallbackQuery,
     InlineQuery,

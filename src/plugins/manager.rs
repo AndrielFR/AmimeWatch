@@ -4,7 +4,7 @@
 use grammers_client::{Client, Update};
 
 use crate::plugins::modules::start;
-use crate::plugins::{Data, Plugin, Result};
+use crate::plugins::{Data, HandlerType, Plugin, Result};
 
 pub struct Manager {
     prefixes: Vec<String>,
@@ -24,16 +24,29 @@ impl Manager {
 
         while let Some(update) = client.next_update().await? {
             let mut query = String::new();
+            let mut update_type = HandlerType::default();
+
+            let mut data = Data {
+                query: query.clone(),
+                me: Some(me.clone()),
+                ..Default::default()
+            };
 
             match update {
-                Update::CallbackQuery(ref callback) => {
+                Update::CallbackQuery(callback) => {
                     query = std::str::from_utf8(callback.data()).unwrap().to_string();
+                    data.callback = Some(callback);
+                    update_type = HandlerType::CallbackQuery;
                 }
-                Update::InlineQuery(ref inline) => {
+                Update::InlineQuery(inline) => {
                     query = inline.text().to_string();
+                    data.inline = Some(inline);
+                    update_type = HandlerType::InlineQuery;
                 }
-                Update::NewMessage(ref message) => {
+                Update::NewMessage(message) => {
                     query = message.text().to_string();
+                    data.message = Some(message);
+                    update_type = HandlerType::Message;
                 }
                 _ => {}
             }
@@ -47,27 +60,10 @@ impl Manager {
                     id => {
                         let handler = plugin.get_handler(id);
 
-                        let mut data = Data {
-                            query,
-                            me: Some(me.clone()),
-                            ..Default::default()
-                        };
-
-                        match update {
-                            Update::CallbackQuery(callback) => {
-                                data.callback = Some(callback);
-                            }
-                            Update::InlineQuery(inline) => {
-                                data.inline = Some(inline);
-                            }
-                            Update::NewMessage(message) => {
-                                data.message = Some(message);
-                            }
-                            _ => {}
+                        if handler.r#type() == &update_type {
+                            handler.run(client.clone(), data).await?;
+                            break;
                         }
-
-                        handler.run(client.clone(), data).await?;
-                        break;
                     }
                 }
             }
