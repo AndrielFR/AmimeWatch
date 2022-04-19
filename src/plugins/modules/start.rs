@@ -17,7 +17,7 @@ async fn start(_client: Client, data: Data) -> Result {
 pub fn module() -> Plugin {
     Plugin::default().register(
         Handler::new("start$")
-            .set_type(HandlerType::Command)
+            .set_type(HandlerType::Message)
             .set_is_regex(true)
             .set_is_command(true)
             .set_function(start),

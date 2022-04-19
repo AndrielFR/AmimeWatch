@@ -88,23 +88,23 @@ impl Handler {
         false
     }
 
-    pub fn function(&self) -> AsyncFunction {
+    fn function(&self) -> AsyncFunction {
         self.function
     }
 
-    pub fn r#type(&self) -> &Type {
+    fn r#type(&self) -> &Type {
         &self.r#type
     }
 
-    pub fn pattern(&self) -> &str {
+    fn pattern(&self) -> &str {
         self.pattern
     }
 
-    pub fn is_regex(&self) -> bool {
+    fn is_regex(&self) -> bool {
         self.is_regex
     }
 
-    pub fn is_command(&self) -> bool {
+    fn is_command(&self) -> bool {
         self.is_command
     }
 
@@ -150,7 +150,6 @@ impl Handler {
 pub enum Type {
     CallbackQuery,
     InlineQuery,
-    Command,
     Message,
 }
 

@@ -14,6 +14,7 @@ impl Plugin {
         self.handlers.push(handler);
         self
     }
+
     pub async fn check(&self, query: &str, username: &str, prefixes: &[String]) -> i16 {
         for (id, handler) in self.handlers.iter().enumerate() {
             match handler.check(query, username, prefixes) {

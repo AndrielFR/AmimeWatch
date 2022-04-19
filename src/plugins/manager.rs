@@ -76,7 +76,7 @@ impl Manager {
         Ok(())
     }
 
-    pub fn add_plugin(mut self, plugin: Plugin) -> Self {
+    fn add_plugin(mut self, plugin: Plugin) -> Self {
         self.plugins.push(plugin);
         self
     }
@@ -85,7 +85,7 @@ impl Manager {
         self.add_plugin(start::module())
     }
 
-    pub fn prefixes(&self) -> &Vec<String> {
+    fn prefixes(&self) -> &[String] {
         &self.prefixes
     }
 }
