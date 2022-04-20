@@ -3,13 +3,19 @@
 
 use crate::plugins::Handler;
 
-#[derive(Default)]
 pub struct Plugin {
     name: String,
     handlers: Vec<Handler>,
 }
 
 impl Plugin {
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            handlers: Vec::new(),
+        }
+    }
+
     pub fn register(mut self, handler: Handler) -> Self {
         self.handlers.push(handler);
         self

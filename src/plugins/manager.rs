@@ -25,6 +25,7 @@ impl Manager {
 
     pub async fn run(self, mut client: Client, database_url: String) -> Result {
         log::info!("running");
+        let mut update_id = 0;
         let me = client.get_me().await?;
 
         rust_i18n::set_locale("pt");
@@ -33,6 +34,8 @@ impl Manager {
             _ = tokio::signal::ctrl_c() => Ok(None),
             result = client.next_update() => result,
         }? {
+            update_id += 1;
+
             let mut group_id = 0;
             let mut user_id = 0;
             let mut query = String::new();
@@ -69,10 +72,17 @@ impl Manager {
                 _ => {}
             }
 
+            log::info!("new {} #{} update by {} in {}", data.update_type, update_id, user_id, group_id);
+
             for plugin in self.plugins() {
                 match plugin.check(&query, me.username().unwrap(), self.prefixes()) {
-                    -1 => continue,
+                    -1 => {
+                        log::info!("update #{} not handled", update_id);
+                        continue;
+                    }
                     id => {
+                        log::info!("update #{} being handled by plugin {}", update_id, plugin.name());
+
                         let handler = plugin.get_handler(id);
                         let database = MySqlPool::connect(&database_url).await?;
 
@@ -112,6 +122,7 @@ impl Manager {
                             data.locale = Some(locale);
                         }
 
+
                         if handler.use_database() {
                             data.database = Some(database);
                         }
@@ -131,14 +142,16 @@ impl Manager {
         Ok(())
     }
 
-    fn add_plugin(mut self, plugin: Plugin) -> Self {
-        self.plugins.push(plugin);
-        self
+    fn add_plugin(&mut self, plugin: Plugin) {
+        self.plugins.push(plugin)
     }
 
-    pub fn load_plugins(self) -> Self {
+    pub fn load_plugins(mut self) -> Self {
         log::info!("loading plugins...");
-        self.add_plugin(start::module())
+        self.add_plugin(start::module());
+        log::info!("{} plugins loaded", self.plugins().len());
+
+        self
     }
 
     fn prefixes(&self) -> &[String] {

@@ -68,7 +68,7 @@ async fn start_callback(_client: Client, data: Data) -> Result {
 }
 
 pub fn module() -> Plugin {
-    Plugin::default()
+    Plugin::new("start")
         .register(
             Handler::new("start$")
                 .set_type(HandlerType::Message)

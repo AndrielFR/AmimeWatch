@@ -154,8 +154,24 @@ pub enum Type {
     Message,
 }
 
+impl Type {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::CallbackQuery => "CallbackQuery",
+            Self::InlineQuery => "InlineQuery",
+            Self::Message => "Message",
+        }
+    }
+}
+
 impl Default for Type {
     fn default() -> Self {
         Self::Message
+    }
+}
+
+impl std::fmt::Display for Type {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str().to_ascii_lowercase())
     }
 }

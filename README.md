@@ -6,6 +6,8 @@ Re-written version of [AmimeWatch](https://github.com/AmanoTeam/AmimeWatch/) in 
 
 ## Preparing
 
+### Configuration
+
 Create a file named `config.toml` and fill with your data:
 
 ```toml
@@ -18,10 +20,18 @@ token = ""
 prefixes = ["/"]
 ```
 
-After it, create a database [with](src/database/database.sql) and put your MySQL URL in the environment like:
+### Database
+
+Create the database [with](src/database/database.sql) and put your MySQL URL in the environment like:
 
 ```bash
 export DATABASE_URL="mysql://root:toor@localhost:3306/amime"
+```
+
+### Logging
+
+```bash
+export RUST_LOG=info cargo run
 ```
 
 ## Running

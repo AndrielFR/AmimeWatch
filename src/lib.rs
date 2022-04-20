@@ -23,7 +23,7 @@ rust_i18n::i18n!("./src/locales/files/");
 
 #[macro_export]
 macro_rules! dyn_async {(
-    $( #[$attr:meta] )*
+    $(#[$attr:meta])*
     $pub:vis
     async
     fn $fname:ident ($($args:tt)*) $(-> $Ret:ty)? {
