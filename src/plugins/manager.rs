@@ -2,13 +2,13 @@
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
 use grammers_client::{Client, Update};
-use sqlx::MySqlPool;
 use ormx::Insert;
+use sqlx::MySqlPool;
 
+use crate::database::tables;
+use crate::locales::Locale;
 use crate::plugins::modules::start;
 use crate::plugins::{Data, HandlerType, Plugin, Result};
-use crate::locales::Locale;
-use crate::database::tables;
 
 pub struct Manager {
     prefixes: Vec<String>,
@@ -79,33 +79,33 @@ impl Manager {
                         if handler.use_i18n() {
                             let locale = if group_id == user_id {
                                 match tables::User::by_id(&database, user_id).await? {
-                                   Some(user) => Locale::from(user.language),
-                                   None => {
-                                       let locale = Locale::default();
-                                       tables::InsertUser {
-                                           id: user_id as u32,
-                                           language: locale.code().to_string(),
-                                       }
-                                       .insert(&mut *database.acquire().await?)
-                                       .await?;
+                                    Some(user) => Locale::from(user.language),
+                                    None => {
+                                        let locale = Locale::default();
+                                        tables::InsertUser {
+                                            id: user_id as u32,
+                                            language: locale.code().to_string(),
+                                        }
+                                        .insert(&mut *database.acquire().await?)
+                                        .await?;
 
-                                       locale
-                                   },
+                                        locale
+                                    }
                                 }
                             } else {
                                 match tables::Group::by_id(&database, group_id).await? {
-                                   Some(group) => Locale::from(group.language),
-                                   None => {
-                                       let locale = Locale::default();
-                                       tables::InsertGroup {
-                                           id: group_id as i32,
-                                           language: locale.code().to_string(),
-                                       }
-                                       .insert(&mut *database.acquire().await?)
-                                       .await?;
+                                    Some(group) => Locale::from(group.language),
+                                    None => {
+                                        let locale = Locale::default();
+                                        tables::InsertGroup {
+                                            id: group_id as i32,
+                                            language: locale.code().to_string(),
+                                        }
+                                        .insert(&mut *database.acquire().await?)
+                                        .await?;
 
-                                       locale
-                                   },
+                                        locale
+                                    }
                                 }
                             };
 
@@ -118,7 +118,7 @@ impl Manager {
 
                         if handler.r#type() == &data.update_type {
                             match handler.run(client.clone(), data).await {
-                                Ok(_) => {},
+                                Ok(_) => {}
                                 Err(e) => log::error!("an error ocurred while handling: {}", e),
                             }
                             break;
