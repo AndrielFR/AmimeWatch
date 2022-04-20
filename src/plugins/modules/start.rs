@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
+use dyn_fmt::AsStrFormatExt;
 use grammers_client::{types, Client, InputMessage};
 
 use crate::plugins::{Data, Handler, HandlerType, Plugin, Result};
@@ -21,27 +22,24 @@ async fn start_message(_client: Client, data: Data) -> Result {
     )
     .reply_markup(&markup);
 
-    match message.chat() {
-        types::Chat::Group(_) => {
-            let markup = utils::make_keyboard(vec![&[(
-                &locale.get("buttons.pm"),
-                &"https://t.me/{}/?start".format(&[me.username().unwrap()]),
-                "url",
-            )]]);
-            message
-                .reply(
-                    InputMessage::html(
-                        locale
-                            .get("plugins.start.start_group")
-                            .format(&[user.name(), me.first_name()]),
-                    )
-                    .reply_markup(&markup),
+    if let types::Chat::Group(_) = message.chat() {
+        let markup = utils::make_keyboard(vec![&[(
+            &locale.get("buttons.pm"),
+            &"https://t.me/{}/?start".format(&[me.username().unwrap()]),
+            "url",
+        )]]);
+        message
+            .reply(
+                InputMessage::html(
+                    locale
+                        .get("plugins.start.start_group")
+                        .format(&[user.name(), me.first_name()]),
                 )
-                .await?;
+                .reply_markup(&markup),
+            )
+            .await?;
 
-            return Ok(());
-        }
-        _ => {}
+        return Ok(());
     }
 
     message.reply(input).await?;
