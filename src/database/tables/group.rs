@@ -2,12 +2,12 @@
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
 #[derive(Debug, ormx::Table)]
-#[ormx(table = "users", id = id, insertable)]
-pub struct User {
+#[ormx(table = "groups", id = id, insertable)]
+pub struct Group {
     #[ormx(column = "id")]
     #[ormx(get_one = get_by_id(i64))]
     #[ormx(get_optional(i64))]
-    pub id: u32,
+    pub id: i32,
     #[ormx(get_optional(&str))]
     pub language: String,
 }

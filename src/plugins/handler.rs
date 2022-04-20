@@ -147,7 +147,7 @@ impl Handler {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Type {
     CallbackQuery,
     InlineQuery,

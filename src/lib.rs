@@ -8,6 +8,7 @@ mod config;
 pub mod database;
 pub mod locales;
 pub mod plugins;
+pub mod utils;
 
 pub use config::Config;
 

@@ -1,4 +1,21 @@
 ---
 en:
   NAME: English
-  FLAG: e
+  FLAG: 🇺🇲
+
+  # Plugins
+  plugins:
+    start:
+      start:
+        Hello {}, I am <b>{}</b>, a bot made for otakus to have fun watching
+        anime without leaving Telegram! Explore me using the buttons below as I also
+        recommend taking a look at /help.
+      start_group:
+        Hello {}, I am <b>{}</b>, a bot made for otakus to have fun watching
+        anime without leaving Telegram! Explore me on private by tapping the below
+        button.
+
+  # Buttons
+  buttons:
+    about: 👤 About
+    pm: 🔒 PM

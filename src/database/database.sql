@@ -4,3 +4,8 @@ CREATE OR REPLACE TABLE amime.users (
 	id       INT(14) UNSIGNED PRIMARY KEY,
 	language VARCHAR(3) NOT NULL DEFAULT "pt"
 );
+
+CREATE OR REPLACE TABLE amime.groups (
+	id       INT(18) PRIMARY KEY,
+	language VARCHAR(3) NOT NULL DEFAULT "pt"
+);

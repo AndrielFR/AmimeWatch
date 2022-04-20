@@ -5,6 +5,7 @@ use grammers_client::types::{CallbackQuery, InlineQuery, Message, User};
 use sqlx::MySqlPool;
 
 use crate::locales::Locale;
+use crate::plugins::HandlerType;
 
 #[derive(Debug, Default)]
 pub struct Data {
@@ -15,4 +16,5 @@ pub struct Data {
     pub locale: Option<Locale>,
     pub database: Option<MySqlPool>,
     pub me: Option<User>,
+    pub update_type: HandlerType,
 }

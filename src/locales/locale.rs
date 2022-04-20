@@ -3,8 +3,7 @@
 
 use crate::locales::Language;
 
-// TODO: Remove default()
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Locale {
     language: Language,
 }

@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: MIT You, 2022-03-09 - initial commit
+// SPDX-License-Identifier: MIT
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
+mod group;
 mod user;
 
+pub use group::*;
 pub use user::*;

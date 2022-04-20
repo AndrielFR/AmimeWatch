@@ -1,3 +1,21 @@
+---
 pt:
   NAME: Português
-  FLAG: e
+  FLAG: 🇧🇷
+
+  # Plugins
+  plugins:
+    start:
+      start:
+        Olá {}, eu sou <b>{}</b>, um bot feito para os <i>otakus</i> se divertirem
+        ao assistir animes sem sair do Telegram! Explore-me usando os botões abaixo
+        como também recomendo dar uma olhada no /help.
+      start_group:
+        Olá {}, eu sou <b>{}</b>, um bot feito para os <i>otakus</i> se
+        divertirem ao assistir animes sem sair do Telegram! Explore-me no privado
+        ao tocar no botão abaixo.
+
+  # Botões
+  buttons:
+    about: 👤 Sobre
+    pm: 🔒 PM

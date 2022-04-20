@@ -33,34 +33,38 @@ impl Manager {
             _ = tokio::signal::ctrl_c() => Ok(None),
             result = client.next_update() => result,
         }? {
+            let mut group_id = 0;
             let mut user_id = 0;
             let mut query = String::new();
-            let mut update_type = HandlerType::default();
 
             let mut data = Data {
                 query: query.clone(),
                 me: Some(me.clone()),
+                update_type: HandlerType::default(),
                 ..Default::default()
             };
 
             match update {
                 Update::CallbackQuery(callback) => {
+                    group_id = callback.chat().id();
                     user_id = callback.sender().id();
                     query = std::str::from_utf8(callback.data()).unwrap().to_string();
                     data.callback = Some(callback);
-                    update_type = HandlerType::CallbackQuery;
+                    data.update_type = HandlerType::CallbackQuery;
                 }
                 Update::InlineQuery(inline) => {
                     user_id = inline.sender().id();
+                    group_id = user_id;
                     query = inline.text().to_string();
                     data.inline = Some(inline);
-                    update_type = HandlerType::InlineQuery;
+                    data.update_type = HandlerType::InlineQuery;
                 }
                 Update::NewMessage(message) => {
+                    group_id = message.chat().id();
                     user_id = message.sender().unwrap().id();
                     query = message.text().to_string();
                     data.message = Some(message);
-                    update_type = HandlerType::Message;
+                    data.update_type = HandlerType::Message;
                 }
                 _ => {}
             }
@@ -73,20 +77,38 @@ impl Manager {
                         let database = MySqlPool::connect(&database_url).await?;
 
                         if handler.use_i18n() {
-                            let locale = match tables::User::by_id(&database, user_id).await? {
-                               Some(user) => Locale::from(user.language),
-                               None => {
-                                   let locale = Locale::default();
-                                   tables::InsertUser {
-                                       id: user_id as u32,
-                                       language: locale.code().to_string(),
-                                   }
-                                   .insert(&mut *database.acquire().await?)
-                                   .await?;
+                            let locale = if group_id == user_id {
+                                match tables::User::by_id(&database, user_id).await? {
+                                   Some(user) => Locale::from(user.language),
+                                   None => {
+                                       let locale = Locale::default();
+                                       tables::InsertUser {
+                                           id: user_id as u32,
+                                           language: locale.code().to_string(),
+                                       }
+                                       .insert(&mut *database.acquire().await?)
+                                       .await?;
 
-                                   locale
-                               },
+                                       locale
+                                   },
+                                }
+                            } else {
+                                match tables::Group::by_id(&database, group_id).await? {
+                                   Some(group) => Locale::from(group.language),
+                                   None => {
+                                       let locale = Locale::default();
+                                       tables::InsertGroup {
+                                           id: group_id as i32,
+                                           language: locale.code().to_string(),
+                                       }
+                                       .insert(&mut *database.acquire().await?)
+                                       .await?;
+
+                                       locale
+                                   },
+                                }
                             };
+
                             data.locale = Some(locale);
                         }
 
@@ -94,7 +116,7 @@ impl Manager {
                             data.database = Some(database);
                         }
 
-                        if handler.r#type() == &update_type {
+                        if handler.r#type() == &data.update_type {
                             match handler.run(client.clone(), data).await {
                                 Ok(_) => {},
                                 Err(e) => log::error!("an error ocurred while handling: {}", e),
