@@ -9,6 +9,8 @@ const SESSION_FILE: &str = "amime.session";
 type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
 async fn async_main() -> Result {
+    dotenv::dotenv().ok();
+
     // Initialize the logger
     env_logger::init();
 
@@ -44,7 +46,7 @@ async fn async_main() -> Result {
     // Load and run the plugins
     amime_watch::plugins::Manager::new(config.bot.prefixes)
         .load_plugins()
-        .run(client.clone())
+        .run(client.clone(), dotenv::var("DATABASE_URL")?)
         .await?;
 
     // Save the session

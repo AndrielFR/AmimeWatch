@@ -2,10 +2,13 @@
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
 use grammers_client::{Client, Update};
+use sqlx::MySqlPool;
+use ormx::Insert;
 
 use crate::plugins::modules::start;
 use crate::plugins::{Data, HandlerType, Plugin, Result};
 use crate::locales::Locale;
+use crate::database::tables;
 
 pub struct Manager {
     prefixes: Vec<String>,
@@ -20,7 +23,7 @@ impl Manager {
         }
     }
 
-    pub async fn run(self, mut client: Client) -> Result {
+    pub async fn run(self, mut client: Client, database_url: String) -> Result {
         log::info!("running");
         let me = client.get_me().await?;
 
@@ -30,7 +33,7 @@ impl Manager {
             _ = tokio::signal::ctrl_c() => Ok(None),
             result = client.next_update() => result,
         }? {
-            let user_id;
+            let mut user_id = 0;
             let mut query = String::new();
             let mut update_type = HandlerType::default();
 
@@ -67,11 +70,28 @@ impl Manager {
                     -1 => continue,
                     id => {
                         let handler = plugin.get_handler(id);
+                        let database = MySqlPool::connect(&database_url).await?;
 
                         if handler.use_i18n() {
-                            let locale_code = "pt";
-                            let locale = Locale::from(locale_code);
+                            let locale = match tables::User::by_id(&database, user_id).await? {
+                               Some(user) => Locale::from(user.language),
+                               None => {
+                                   let locale = Locale::default();
+                                   tables::InsertUser {
+                                       id: user_id as u32,
+                                       language: locale.code().to_string(),
+                                   }
+                                   .insert(&mut *database.acquire().await?)
+                                   .await?;
+
+                                   locale
+                               },
+                            };
                             data.locale = Some(locale);
+                        }
+
+                        if handler.use_database() {
+                            data.database = Some(database);
                         }
 
                         if handler.r#type() == &update_type {

@@ -2,9 +2,9 @@
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
 use grammers_client::types::{CallbackQuery, InlineQuery, Message, User};
+use sqlx::MySqlPool;
 
 use crate::locales::Locale;
-// use crate::database::Database;
 
 #[derive(Debug, Default)]
 pub struct Data {
@@ -13,6 +13,6 @@ pub struct Data {
     pub inline: Option<InlineQuery>,
     pub message: Option<Message>,
     pub locale: Option<Locale>,
-    // pub database: Option<Database>,
+    pub database: Option<MySqlPool>,
     pub me: Option<User>,
 }

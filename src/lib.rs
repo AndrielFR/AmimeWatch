@@ -5,6 +5,7 @@
 #![allow(unused_macros)]
 
 mod config;
+pub mod database;
 pub mod locales;
 pub mod plugins;
 
