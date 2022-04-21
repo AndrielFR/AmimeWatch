@@ -24,6 +24,7 @@ impl Manager {
 
     pub async fn run(self, mut client: Client, database_url: String) -> Result {
         log::info!("running");
+
         let mut update_id = 0;
         let me = client.get_me().await?;
 
@@ -149,14 +150,16 @@ impl Manager {
         Ok(())
     }
 
-    fn add_plugin(&mut self, plugin: Plugin) {
+    fn push_plugin(&mut self, plugin: Plugin) {
         self.plugins.push(plugin)
     }
 
     pub fn load_plugins(mut self) -> Self {
         log::info!("loading plugins...");
-        self.add_plugin(modules::about::module());
-        self.add_plugin(modules::start::module());
+
+        self.push_plugin(modules::about::module());
+        self.push_plugin(modules::start::module());
+
         log::info!("{} plugins loaded", self.plugins().len());
 
         self
