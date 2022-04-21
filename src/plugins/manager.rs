@@ -37,10 +37,8 @@ impl Manager {
 
             let mut group_id = 0;
             let mut user_id = 0;
-            let mut query = String::new();
 
             let mut data = Data {
-                query: query.clone(),
                 me: Some(me.clone()),
                 update_type: HandlerType::default(),
                 ..Default::default()
@@ -50,21 +48,21 @@ impl Manager {
                 Update::CallbackQuery(callback) => {
                     group_id = callback.chat().id();
                     user_id = callback.sender().id();
-                    query = std::str::from_utf8(callback.data()).unwrap().to_string();
+                    data.query = std::str::from_utf8(callback.data()).unwrap().to_string();
                     data.callback = Some(callback);
                     data.update_type = HandlerType::CallbackQuery;
                 }
                 Update::InlineQuery(inline) => {
                     user_id = inline.sender().id();
                     group_id = user_id;
-                    query = inline.text().to_string();
+                    data.query = inline.text().to_string();
                     data.inline = Some(inline);
                     data.update_type = HandlerType::InlineQuery;
                 }
                 Update::NewMessage(message) => {
                     group_id = message.chat().id();
                     user_id = message.sender().unwrap().id();
-                    query = message.text().to_string();
+                    data.query = message.text().to_string();
                     data.message = Some(message);
                     data.update_type = HandlerType::Message;
                 }
@@ -80,7 +78,7 @@ impl Manager {
             );
 
             for plugin in self.plugins() {
-                match plugin.check(&query, me.username().unwrap(), self.prefixes()) {
+                match plugin.check(&data.query, me.username().unwrap(), self.prefixes()) {
                     -1 => continue,
                     id => {
                         log::info!(
