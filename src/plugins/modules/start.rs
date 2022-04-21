@@ -13,7 +13,7 @@ fn default_input(locale: Locale, user: &types::Chat, me: types::User) -> InputMe
     InputMessage::html(
         locale
             .get("plugins.start.start")
-            .format(&[user.name(), me.first_name()]),
+            .format(&[&utils::make_html_mention(user), me.first_name()]),
     )
     .reply_markup(&markup)
 }

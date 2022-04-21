@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
-use grammers_client::types::{button, reply_markup};
+use grammers_client::types::{button, reply_markup, Chat};
 
 use crate::locales::Language;
 
@@ -22,6 +22,21 @@ pub fn make_keyboard(buttons: Vec<&[(&str, &str, &str)]>) -> reply_markup::Inlin
     }
 
     reply_markup::inline(rows)
+}
+
+pub fn make_html_mention(chat: &Chat) -> String {
+    match chat {
+        Chat::User(user) => {
+            format!(
+                "<a href=\"tg://user?id={}\">{}</a>",
+                user.id(),
+                user.first_name()
+            )
+        }
+        c => {
+            format!("<a href=\"https://t.me/c/{}/-1\">{}</a>", c.id(), c.name())
+        }
+    }
 }
 
 pub fn make_html_url(url: &str, text: &str) -> String {
