@@ -8,9 +8,8 @@ use crate::locales::Locale;
 use crate::plugins::{Data, Handler, HandlerType, Plugin, Result};
 use crate::utils;
 
-fn default_input(locale: Locale, me: types::User) -> InputMessage {
-    let markup = utils::make_keyboard(vec![&[(&locale.get("buttons.back"), "start", "inline")]]);
-    InputMessage::html(locale.get("plugins.about.about").format(&[
+fn default_input(locale: Locale, me: types::User, is_private: bool) -> InputMessage {
+    let mut input = InputMessage::html(locale.get("plugins.about.about").format(&[
         me.first_name(),
         &utils::make_html_url("https://github.com/AndrielFR/AmimeWatch", "GitHub"),
         &utils::make_html_url(
@@ -21,8 +20,15 @@ fn default_input(locale: Locale, me: types::User) -> InputMessage {
             utils::group_url(locale.language()),
             &locale.get("words.group"),
         ),
-    ]))
-    .reply_markup(&markup)
+    ]));
+
+    if is_private {
+        let markup =
+            utils::make_keyboard(vec![&[(&locale.get("buttons.back"), "start", "inline")]]);
+        input = input.reply_markup(&markup);
+    }
+
+    input
 }
 
 #[macro_rules_attribute(crate::dyn_async)]
@@ -31,7 +37,13 @@ async fn about_message(_client: Client, data: Data) -> Result {
     let locale = data.locale.unwrap();
     let me = data.me.unwrap();
 
-    message.reply(default_input(locale, me)).await?;
+    if let types::Chat::Group(_) = message.chat() {
+        message.reply(default_input(locale, me, false)).await?;
+
+        return Ok(());
+    }
+
+    message.reply(default_input(locale, me, true)).await?;
 
     Ok(())
 }
@@ -42,7 +54,10 @@ async fn about_callback(_client: Client, data: Data) -> Result {
     let locale = data.locale.unwrap();
     let me = data.me.unwrap();
 
-    callback.answer().edit(default_input(locale, me)).await?;
+    callback
+        .answer()
+        .edit(default_input(locale, me, true))
+        .await?;
 
     Ok(())
 }
