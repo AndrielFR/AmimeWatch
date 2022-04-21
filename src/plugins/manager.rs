@@ -7,8 +7,7 @@ use sqlx::MySqlPool;
 
 use crate::database::tables;
 use crate::locales::Locale;
-use crate::plugins::modules::start;
-use crate::plugins::{Data, HandlerType, Plugin, Result};
+use crate::plugins::{modules, Data, HandlerType, Plugin, Result};
 
 pub struct Manager {
     prefixes: Vec<String>,
@@ -72,16 +71,23 @@ impl Manager {
                 _ => {}
             }
 
-            log::info!("new {} #{} update by {} in {}", data.update_type, update_id, user_id, group_id);
+            log::info!(
+                "new {} #{} update by {} in {}",
+                data.update_type,
+                update_id,
+                user_id,
+                group_id
+            );
 
             for plugin in self.plugins() {
                 match plugin.check(&query, me.username().unwrap(), self.prefixes()) {
-                    -1 => {
-                        log::info!("update #{} not handled", update_id);
-                        continue;
-                    }
+                    -1 => continue,
                     id => {
-                        log::info!("update #{} being handled by plugin {}", update_id, plugin.name());
+                        log::info!(
+                            "update #{} being handled by plugin {}",
+                            update_id,
+                            plugin.name()
+                        );
 
                         let handler = plugin.get_handler(id);
                         let database = MySqlPool::connect(&database_url).await?;
@@ -122,7 +128,6 @@ impl Manager {
                             data.locale = Some(locale);
                         }
 
-
                         if handler.use_database() {
                             data.database = Some(database);
                         }
@@ -130,7 +135,11 @@ impl Manager {
                         if handler.r#type() == &data.update_type {
                             match handler.run(client.clone(), data).await {
                                 Ok(_) => {}
-                                Err(e) => log::error!("an error ocurred while handling: {}", e),
+                                Err(e) => log::error!(
+                                    "an error ocurred while handling #{}: {}",
+                                    update_id,
+                                    e
+                                ),
                             }
                             break;
                         }
@@ -148,7 +157,8 @@ impl Manager {
 
     pub fn load_plugins(mut self) -> Self {
         log::info!("loading plugins...");
-        self.add_plugin(start::module());
+        self.add_plugin(modules::about::module());
+        self.add_plugin(modules::start::module());
         log::info!("{} plugins loaded", self.plugins().len());
 
         self

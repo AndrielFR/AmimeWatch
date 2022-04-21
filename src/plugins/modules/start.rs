@@ -4,8 +4,19 @@
 use dyn_fmt::AsStrFormatExt;
 use grammers_client::{types, Client, InputMessage};
 
+use crate::locales::Locale;
 use crate::plugins::{Data, Handler, HandlerType, Plugin, Result};
 use crate::utils;
+
+fn default_input(locale: Locale, user: &types::Chat, me: types::User) -> InputMessage {
+    let markup = utils::make_keyboard(vec![&[(&locale.get("buttons.about"), "about", "inline")]]);
+    InputMessage::html(
+        locale
+            .get("plugins.start.start")
+            .format(&[user.name(), me.first_name()]),
+    )
+    .reply_markup(&markup)
+}
 
 #[macro_rules_attribute(crate::dyn_async)]
 async fn start_message(_client: Client, data: Data) -> Result {
@@ -13,14 +24,6 @@ async fn start_message(_client: Client, data: Data) -> Result {
     let locale = data.locale.unwrap();
     let user = message.sender().unwrap();
     let me = data.me.unwrap();
-
-    let markup = utils::make_keyboard(vec![&[(&locale.get("buttons.about"), "about", "inline")]]);
-    let input = InputMessage::html(
-        locale
-            .get("plugins.start.start")
-            .format(&[user.name(), me.first_name()]),
-    )
-    .reply_markup(&markup);
 
     if let types::Chat::Group(_) = message.chat() {
         let markup = utils::make_keyboard(vec![&[(
@@ -42,7 +45,7 @@ async fn start_message(_client: Client, data: Data) -> Result {
         return Ok(());
     }
 
-    message.reply(input).await?;
+    message.reply(default_input(locale, &user, me)).await?;
 
     Ok(())
 }
@@ -51,16 +54,12 @@ async fn start_message(_client: Client, data: Data) -> Result {
 async fn start_callback(_client: Client, data: Data) -> Result {
     let mut callback = data.callback.unwrap();
     let locale = data.locale.unwrap();
-    let user = callback.sender();
     let me = data.me.unwrap();
 
-    let markup = utils::make_keyboard(vec![&[(&locale.get("buttons.about"), "about", "inline")]]);
-    let input = InputMessage::html(
-        locale
-            .get("plugins.start.start")
-            .format(&[user.name(), me.first_name()]),
-    )
-    .reply_markup(&markup);
+    let input = {
+        let user = callback.sender();
+        default_input(locale, user, me)
+    };
 
     callback.answer().edit(input).await?;
 

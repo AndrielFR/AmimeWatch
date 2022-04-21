@@ -3,6 +3,8 @@
 
 use grammers_client::types::{button, reply_markup};
 
+use crate::locales::Language;
+
 pub fn make_keyboard(buttons: Vec<&[(&str, &str, &str)]>) -> reply_markup::Inline {
     let mut rows = Vec::new();
 
@@ -20,4 +22,22 @@ pub fn make_keyboard(buttons: Vec<&[(&str, &str, &str)]>) -> reply_markup::Inlin
     }
 
     reply_markup::inline(rows)
+}
+
+pub fn make_html_url(url: &str, text: &str) -> String {
+    format!("<a href=\"{}\">{}</a>", url, text)
+}
+
+pub fn channel_url<'a>(language: Language) -> &'a str {
+    match language {
+        Language::English => "https://t.me/AmimeWatch",
+        _ => "https://t.me/AmimeWatchChannelPT",
+    }
+}
+
+pub fn group_url<'a>(language: Language) -> &'a str {
+    match language {
+        Language::English => "https://t.me/AmimeWatchGroup",
+        _ => "https://t.me/AmimeWatchGroupPT",
+    }
 }

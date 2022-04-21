@@ -5,6 +5,10 @@ en:
 
   # Plugins
   plugins:
+    about:
+      about: |
+        <b>{}</b> is a bot developed in <i>Rust</i> with the <b>Grammers MTProto</b> library, made to be fast, stable and full when it comes to animes.
+        Links: {} | {} | {}
     start:
       start:
         Hello {}, I am <b>{}</b>, a bot made for otakus to have fun watching
@@ -18,4 +22,10 @@ en:
   # Buttons
   buttons:
     about: 👤 About
+    back: 🔙 Back
     pm: 🔒 PM
+
+  # Words
+  words:
+    channel: Channel
+    group: Group

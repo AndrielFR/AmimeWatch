@@ -10,11 +10,15 @@ pub struct Locale {
 
 impl Locale {
     pub fn get(&self, key: &str) -> String {
-        rust_i18n::t!(key, locale = self.language.code())
+        rust_i18n::t!(key, locale = self.code())
     }
 
     pub fn code(&self) -> &str {
         self.language.code()
+    }
+
+    pub fn language(&self) -> Language {
+        self.language
     }
 }
 

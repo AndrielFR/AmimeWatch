@@ -34,7 +34,7 @@ impl Handler {
             function: not_made_yet,
             r#type: Type::default(),
             is_regex: false,
-            is_command: true,
+            is_command: false,
             use_i18n: false,
             use_database: false,
         }

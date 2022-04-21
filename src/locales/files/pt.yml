@@ -5,6 +5,10 @@ pt:
 
   # Plugins
   plugins:
+    about:
+      about: |
+        <b>{}</b> é um bot desenvolvido em <i>Rust</i> com a biblioteca <b>MTProto Grammers</b>, feito para ser rápido, estável e completo quando se trata de animes.
+        Links: {} | {} | {}
     start:
       start:
         Olá {}, eu sou <b>{}</b>, um bot feito para os <i>otakus</i> se divertirem
@@ -18,4 +22,10 @@ pt:
   # Botões
   buttons:
     about: 👤 Sobre
+    back: 🔙 Voltar
     pm: 🔒 PM
+
+  # Palavras
+  words:
+    channel: Canal
+    group: Grupo
