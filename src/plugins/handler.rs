@@ -104,52 +104,38 @@ impl Handler {
                 let callback = data.callback.as_mut().unwrap();
                 let chat = callback.chat();
 
-                match chat {
-                    types::Chat::Group(group) => {
-                        let user = callback.sender();
-                        match self.level() {
-                            Level::Administrator => {
-                                let permissions = client.get_permissions(group, user).await?;
-                                if !permissions.is_admin() {
-                                    callback
-                                        .answer()
-                                        .alert(locale.get("phrases.not_administrator"))
-                                        .send()
-                                        .await?;
+                if let types::Chat::Group(group) = chat {
+                    let user = callback.sender();
+                    if self.level() == Level::Administrator {
+                        let permissions = client.get_permissions(group, user).await?;
+                        if !permissions.is_admin() {
+                            callback
+                                .answer()
+                                .alert(locale.get("phrases.not_administrator"))
+                                .send()
+                                .await?;
 
-                                    return Ok(false);
-                                }
-                            }
-                            _ => return Ok(true),
+                            return Ok(false);
                         }
                     }
-                    _ => return Ok(true),
                 }
             }
             Type::Message => {
                 let message = data.message.as_ref().unwrap();
                 let chat = message.chat();
 
-                match chat {
-                    types::Chat::Group(group) => {
-                        let user = message.sender().unwrap();
-                        match self.level() {
-                            Level::Administrator => {
-                                let permissions = client.get_permissions(group, user).await?;
-                                if !permissions.is_admin() {
-                                    message
-                                        .reply(InputMessage::text(
-                                            locale.get("phrases.not_administrator"),
-                                        ))
-                                        .await?;
+                if let types::Chat::Group(group) = chat {
+                    let user = message.sender().unwrap();
+                    if self.level() == Level::Administrator {
+                        let permissions = client.get_permissions(group, user).await?;
+                        if !permissions.is_admin() {
+                            message
+                                .reply(InputMessage::text(locale.get("phrases.not_administrator")))
+                                .await?;
 
-                                    return Ok(false);
-                                }
-                            }
-                            _ => return Ok(true),
+                            return Ok(false);
                         }
                     }
-                    _ => return Ok(true),
                 }
             }
             _ => {}
