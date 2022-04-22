@@ -28,19 +28,19 @@ pub fn make_html_mention(chat: &Chat) -> String {
     match chat {
         Chat::User(user) => {
             format!(
-                "<a href=\"tg://user?id={}\">{}</a>",
+                r#"<a href="tg://user?id={}">{}</a>"#,
                 user.id(),
                 user.first_name()
             )
         }
         c => {
-            format!("<a href=\"https://t.me/c/{}/-1\">{}</a>", c.id(), c.name())
+            format!(r#"<a href="https://t.me/c/{}/-1">{}</a>"#, c.id(), c.name())
         }
     }
 }
 
 pub fn make_html_url(url: &str, text: &str) -> String {
-    format!("<a href=\"{}\">{}</a>", url, text)
+    format!(r#"<a href="{}">{}</a>"#, url, text)
 }
 
 pub fn channel_url<'a>(language: Language) -> &'a str {
