@@ -3,6 +3,10 @@ pt:
   NAME: Português
   FLAG: 🇧🇷
 
+  # Frases
+  phrases:
+    not_administrator: Você não é um administrador.
+
   # Plugins
   plugins:
     about:

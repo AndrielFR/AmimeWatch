@@ -3,7 +3,7 @@
 
 use std::{future::Future, pin::Pin};
 
-use grammers_client::{types, Client};
+use grammers_client::{types, Client, InputMessage};
 use regex::Regex;
 
 use crate::plugins::Data;
@@ -42,8 +42,8 @@ impl Handler {
         }
     }
 
-    pub async fn run(&self, mut client: Client, data: Data) -> Result {
-        if self.has_right(&mut client, &data).await? {
+    pub async fn run(&self, mut client: Client, mut data: Data) -> Result {
+        if self.has_right(&mut client, &mut data).await? {
             self.function()(client, data).await?;
         }
         Ok(())
@@ -95,11 +95,13 @@ impl Handler {
     async fn has_right(
         &self,
         client: &mut Client,
-        data: &Data,
+        data: &mut Data,
     ) -> std::result::Result<bool, Box<dyn std::error::Error>> {
+        let locale = data.locale.unwrap_or_default();
+
         match self.r#type() {
             Type::CallbackQuery => {
-                let callback = data.callback.as_ref().unwrap();
+                let callback = data.callback.as_mut().unwrap();
                 let chat = callback.chat();
 
                 match chat {
@@ -109,10 +111,16 @@ impl Handler {
                             Level::Administrator => {
                                 let permissions = client.get_permissions(group, user).await?;
                                 if !permissions.is_admin() {
+                                    callback
+                                        .answer()
+                                        .alert(locale.get("phrases.not_administrator"))
+                                        .send()
+                                        .await?;
+
                                     return Ok(false);
                                 }
                             }
-                            _ => {}
+                            _ => return Ok(true),
                         }
                     }
                     _ => return Ok(true),
@@ -129,10 +137,16 @@ impl Handler {
                             Level::Administrator => {
                                 let permissions = client.get_permissions(group, user).await?;
                                 if !permissions.is_admin() {
+                                    message
+                                        .reply(InputMessage::text(
+                                            locale.get("phrases.not_administrator"),
+                                        ))
+                                        .await?;
+
                                     return Ok(false);
                                 }
                             }
-                            _ => {}
+                            _ => return Ok(true),
                         }
                     }
                     _ => return Ok(true),

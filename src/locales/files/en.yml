@@ -3,6 +3,10 @@ en:
   NAME: English
   FLAG: 🇺🇲
 
+  # Phrases
+  phrases:
+    not_administrator: You are not a administrator.
+
   # Plugins
   plugins:
     about:
