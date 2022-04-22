@@ -5,16 +5,16 @@ use grammers_client::types::{button, reply_markup, Chat};
 
 use crate::locales::Language;
 
-pub fn make_keyboard(buttons: Vec<&[(&str, &str, &str)]>) -> reply_markup::Inline {
-    let mut rows = Vec::new();
+pub fn make_keyboard(buttons: Vec<&[(String, String, String)]>) -> reply_markup::Inline {
+    let mut rows = Vec::with_capacity(buttons.len());
 
     for line in buttons {
         let mut row = Vec::with_capacity(line.len());
 
         for item in line {
-            match item.2 {
-                "url" => row.push(button::url(item.0, item.1)),
-                _ => row.push(button::inline(item.0, item.1.as_bytes())),
+            match item.2.as_str() {
+                "url" => row.push(button::url(&item.0, &item.1)),
+                _ => row.push(button::inline(&item.0, item.1.as_bytes())),
             }
         }
 

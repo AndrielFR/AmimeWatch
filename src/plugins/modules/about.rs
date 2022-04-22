@@ -23,8 +23,11 @@ fn default_input(locale: Locale, me: types::User, is_private: bool) -> InputMess
     ]));
 
     if is_private {
-        let markup =
-            utils::make_keyboard(vec![&[(&locale.get("buttons.back"), "start", "inline")]]);
+        let markup = utils::make_keyboard(vec![&[(
+            locale.get("buttons.back"),
+            "start".to_string(),
+            "inline".to_string(),
+        )]]);
         input = input.reply_markup(&markup);
     }
 
@@ -65,16 +68,14 @@ async fn about_callback(_client: Client, data: Data) -> Result {
 pub fn module() -> Plugin {
     Plugin::new("about")
         .register(
-            Handler::new("about$")
-                .set_type(HandlerType::Message)
+            Handler::new("about$", HandlerType::Message)
                 .set_is_regex(true)
                 .set_is_command(true)
                 .set_use_i18n(true)
                 .set_function(about_message),
         )
         .register(
-            Handler::new("about$")
-                .set_type(HandlerType::CallbackQuery)
+            Handler::new("about$", HandlerType::CallbackQuery)
                 .set_is_regex(true)
                 .set_use_i18n(true)
                 .set_function(about_callback),

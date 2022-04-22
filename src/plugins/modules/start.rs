@@ -9,7 +9,18 @@ use crate::plugins::{Data, Handler, HandlerType, Plugin, Result};
 use crate::utils;
 
 fn default_input(locale: Locale, user: &types::Chat, me: types::User) -> InputMessage {
-    let markup = utils::make_keyboard(vec![&[(&locale.get("buttons.about"), "about", "inline")]]);
+    let markup = utils::make_keyboard(vec![&[
+        (
+            locale.get("buttons.language"),
+            "language".to_string(),
+            "inline".to_string(),
+        ),
+        (
+            locale.get("buttons.about"),
+            "about".to_string(),
+            "inline".to_string(),
+        ),
+    ]]);
     InputMessage::html(
         locale
             .get("plugins.start.start")
@@ -27,9 +38,9 @@ async fn start_message(_client: Client, data: Data) -> Result {
 
     if let types::Chat::Group(_) = message.chat() {
         let markup = utils::make_keyboard(vec![&[(
-            &locale.get("buttons.pm"),
-            &"https://t.me/{}/?start".format(&[me.username().unwrap()]),
-            "url",
+            locale.get("buttons.pm"),
+            "https://t.me/{}/?start".format(&[me.username().unwrap()]),
+            "url".to_string(),
         )]]);
         message
             .reply(
@@ -69,16 +80,14 @@ async fn start_callback(_client: Client, data: Data) -> Result {
 pub fn module() -> Plugin {
     Plugin::new("start")
         .register(
-            Handler::new("start$")
-                .set_type(HandlerType::Message)
+            Handler::new("start$", HandlerType::Message)
                 .set_is_regex(true)
                 .set_is_command(true)
                 .set_use_i18n(true)
                 .set_function(start_message),
         )
         .register(
-            Handler::new("start$")
-                .set_type(HandlerType::CallbackQuery)
+            Handler::new("start$", HandlerType::CallbackQuery)
                 .set_is_regex(true)
                 .set_use_i18n(true)
                 .set_function(start_callback),

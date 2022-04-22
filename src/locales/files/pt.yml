@@ -9,6 +9,10 @@ pt:
       about: |
         <b>{}</b> é um bot desenvolvido em <i>Rust</i> com a biblioteca <b>MTProto Grammers</b>, feito para ser rápido, estável e completo quando se trata de animes.
         Links: {} | {} | {}
+    language:
+      language:
+        Nessa seção você pode alterar o idioma atual (textos), toque no idioma
+        desejado para fazer a troca.
     start:
       start:
         Olá {}, eu sou <b>{}</b>, um bot feito para os <i>otakus</i> se divertirem
@@ -23,6 +27,7 @@ pt:
   buttons:
     about: 👤 Sobre
     back: 🔙 Voltar
+    language: 🌐 Idioma
     pm: 🔒 PM
 
   # Palavras

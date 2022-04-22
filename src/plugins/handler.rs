@@ -3,7 +3,7 @@
 
 use std::{future::Future, pin::Pin};
 
-use grammers_client::Client;
+use grammers_client::{types, Client};
 use regex::Regex;
 
 use crate::plugins::Data;
@@ -21,6 +21,7 @@ pub struct Handler {
     pattern: &'static str,
     function: AsyncFunction,
     r#type: Type,
+    level: Level,
     is_regex: bool,
     is_command: bool,
     use_i18n: bool,
@@ -28,11 +29,12 @@ pub struct Handler {
 }
 
 impl Handler {
-    pub fn new(pattern: &'static str) -> Self {
+    pub fn new(pattern: &'static str, r#type: Type) -> Self {
         Self {
             pattern,
             function: not_made_yet,
-            r#type: Type::default(),
+            r#type,
+            level: Level::default(),
             is_regex: false,
             is_command: false,
             use_i18n: false,
@@ -40,8 +42,10 @@ impl Handler {
         }
     }
 
-    pub async fn run(&self, client: Client, data: Data) -> Result {
-        self.function()(client, data).await?;
+    pub async fn run(&self, mut client: Client, data: Data) -> Result {
+        if self.has_right(&mut client, &data).await? {
+            self.function()(client, data).await?;
+        }
         Ok(())
     }
 
@@ -88,12 +92,68 @@ impl Handler {
         false
     }
 
+    async fn has_right(
+        &self,
+        client: &mut Client,
+        data: &Data,
+    ) -> std::result::Result<bool, Box<dyn std::error::Error>> {
+        match self.r#type() {
+            Type::CallbackQuery => {
+                let callback = data.callback.as_ref().unwrap();
+                let chat = callback.chat();
+
+                match chat {
+                    types::Chat::Group(group) => {
+                        let user = callback.sender();
+                        match self.level() {
+                            Level::Administrator => {
+                                let permissions = client.get_permissions(group, user).await?;
+                                if !permissions.is_admin() {
+                                    return Ok(false);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => return Ok(true),
+                }
+            }
+            Type::Message => {
+                let message = data.message.as_ref().unwrap();
+                let chat = message.chat();
+
+                match chat {
+                    types::Chat::Group(group) => {
+                        let user = message.sender().unwrap();
+                        match self.level() {
+                            Level::Administrator => {
+                                let permissions = client.get_permissions(group, user).await?;
+                                if !permissions.is_admin() {
+                                    return Ok(false);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => return Ok(true),
+                }
+            }
+            _ => {}
+        }
+
+        Ok(true)
+    }
+
     fn function(&self) -> AsyncFunction {
         self.function
     }
 
-    pub fn r#type(&self) -> &Type {
-        &self.r#type
+    pub fn r#type(&self) -> Type {
+        self.r#type
+    }
+
+    pub fn level(&self) -> Level {
+        self.level
     }
 
     fn pattern(&self) -> &str {
@@ -121,8 +181,8 @@ impl Handler {
         self
     }
 
-    pub fn set_type(mut self, value: Type) -> Self {
-        self.r#type = value;
+    pub fn set_level(mut self, level: Level) -> Self {
+        self.level = level;
         self
     }
 
@@ -147,7 +207,7 @@ impl Handler {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Type {
     CallbackQuery,
     InlineQuery,
@@ -173,5 +233,18 @@ impl Default for Type {
 impl std::fmt::Display for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str().to_ascii_lowercase())
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum Level {
+    Administrator,
+    User,
+    Sudo,
+}
+
+impl Default for Level {
+    fn default() -> Self {
+        Self::User
     }
 }

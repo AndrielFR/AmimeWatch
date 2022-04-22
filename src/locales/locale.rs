@@ -13,6 +13,10 @@ impl Locale {
         rust_i18n::t!(key, locale = self.code())
     }
 
+    pub fn get_with_code(key: &str, code: &str) -> String {
+        rust_i18n::t!(key, locale = code)
+    }
+
     pub fn code(&self) -> &str {
         self.language.code()
     }
@@ -26,6 +30,14 @@ impl From<String> for Locale {
     fn from(code: String) -> Self {
         Self {
             language: Language::from(code.as_str()),
+        }
+    }
+}
+
+impl From<&str> for Locale {
+    fn from(code: &str) -> Self {
+        Self {
+            language: Language::from(code),
         }
     }
 }

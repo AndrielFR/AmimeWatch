@@ -9,6 +9,10 @@ en:
       about: |
         <b>{}</b> is a bot developed in <i>Rust</i> with the <b>Grammers MTProto</b> library, made to be fast, stable and full when it comes to animes.
         Links: {} | {} | {}
+    language:
+      language:
+        In this section you can change the current language (texts), tap the
+        desired language to make the switch.
     start:
       start:
         Hello {}, I am <b>{}</b>, a bot made for otakus to have fun watching
@@ -23,6 +27,7 @@ en:
   buttons:
     about: 👤 About
     back: 🔙 Back
+    language: 🌐 Language
     pm: 🔒 PM
 
   # Words

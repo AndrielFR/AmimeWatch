@@ -10,6 +10,8 @@ use crate::plugins::HandlerType;
 #[derive(Debug, Default)]
 pub struct Data {
     pub query: String,
+    pub user_id: i64,
+    pub group_id: i64,
     pub callback: Option<CallbackQuery>,
     pub inline: Option<InlineQuery>,
     pub message: Option<Message>,

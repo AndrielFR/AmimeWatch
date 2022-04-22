@@ -8,6 +8,6 @@ pub mod modules;
 mod plugin;
 
 pub use data::Data;
-pub use handler::{AsyncFunction, Handler, Result, Type as HandlerType};
+pub use handler::{AsyncFunction, Handler, Level as HandlerLevel, Result, Type as HandlerType};
 pub use manager::Manager;
 pub use plugin::Plugin;

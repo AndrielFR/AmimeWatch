@@ -8,6 +8,6 @@ pub struct Group {
     #[ormx(get_one = get_by_id(i64))]
     #[ormx(get_optional(i64))]
     pub id: i32,
-    #[ormx(get_optional(&str))]
+    #[ormx(get_optional(&str), set)]
     pub language: String,
 }

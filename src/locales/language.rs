@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2022 Andriel Ferreira <https://github.com/AndrielFR>
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Language {
     Portuguese,
     English,
@@ -13,6 +13,10 @@ impl Language {
             Self::English => "en",
             _ => "pt",
         }
+    }
+
+    pub fn all() -> Vec<Self> {
+        vec![Self::Portuguese, Self::English]
     }
 }
 
