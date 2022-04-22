@@ -36,7 +36,7 @@ async fn start_message(_client: Client, data: Data) -> Result {
                 InputMessage::html(
                     locale
                         .get("plugins.start.start_group")
-                        .format(&[user.name(), me.first_name()]),
+                        .format(&[&utils::make_html_mention(&user), me.first_name()]),
                 )
                 .reply_markup(&markup),
             )
